@@ -1,0 +1,11 @@
+services:
+  bcr001:
+    build: .
+    container_name: farhand-bcr001
+    hostname: bcr001
+    ports:
+      - "2222:22"
+    environment:
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - ROS_DOMAIN_ID=0
+    restart: unless-stopped
