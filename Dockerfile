@@ -22,6 +22,9 @@ COPY nodes/ /home/ubuntu/nodes/
 COPY scripts/ /home/ubuntu/scripts/
 RUN chmod +x /home/ubuntu/scripts/*.sh
 
+# Livox Mid-360 configuration (checked by diagnostic scripts)
+COPY config/MID360_config.json /opt/livox/config/MID360_config.json
+
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
