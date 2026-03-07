@@ -1,0 +1,13 @@
+[2026-03-06 08:00:01] BOOT: BCR-001 initializing (firmware v2.4.1)...
+[2026-03-06 08:00:01] BOOT: ROS2 Humble + Cyclone DDS domain 0
+[2026-03-06 08:00:02] SENSOR: depth_camera_node started — /bcr_bot/camera/* [OK]
+[2026-03-06 08:00:02] SENSOR: stereo_camera_node started — /bcr_bot/stereo/* [OK]
+[2026-03-06 08:00:03] SENSOR: imu_node started — /bcr_bot/imu [OK]
+[2026-03-06 08:00:03] SENSOR: battery_node started — /bcr_bot/battery_state [OK]
+[2026-03-06 08:00:04] DRIVE: drive_node started — /bcr_bot/odom, /bcr_bot/cmd_vel [OK]
+[2026-03-06 08:00:04] NAV: nav_sim_node started — /bcr_bot/nav_status [OK]
+[2026-03-06 08:00:05] PAYLOAD: payload_node started — /bcr_bot/payload/* [OK]
+[2026-03-06 08:00:05] SENSOR: lidar_2d_node [SKIPPED — not in active launch config]
+[2026-03-06 08:00:06] NAV: WARNING — LiDAR not available. Autonomous navigation disabled.
+[2026-03-06 08:00:06] SYSTEM: 7/8 nodes active. Robot ready (degraded — no LiDAR, no auto-nav).
+[2026-03-06 08:00:06] SYSTEM: Payload gripper: OPEN. Ready for manual operation.

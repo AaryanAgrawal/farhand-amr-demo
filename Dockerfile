@@ -6,6 +6,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rmw-cyclonedds-cpp \
     python3-numpy \
+    python3-psutil \
     openssh-server \
     && rm -rf /var/lib/apt/lists/*
 
@@ -22,8 +23,12 @@ COPY nodes/ /home/ubuntu/nodes/
 COPY scripts/ /home/ubuntu/scripts/
 RUN chmod +x /home/ubuntu/scripts/*.sh
 
-# Livox Mid-360 configuration (checked by diagnostic scripts)
-COPY config/MID360_config.json /opt/livox/config/MID360_config.json
+# Pre-populated logs with realistic operational history
+COPY logs/ /home/ubuntu/logs/
+RUN chown -R ubuntu:ubuntu /home/ubuntu/logs
+
+# Reference documentation for AI-assisted diagnostics
+COPY docs/ /home/ubuntu/docs/
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

@@ -1,0 +1,14 @@
+[2026-03-05 09:15:00] DRIVE: Node started. Motors initialized.
+[2026-03-05 09:15:01] DRIVE: Encoder calibration: L=0.000 R=0.000 rad
+[2026-03-05 09:15:02] DRIVE: Ready. Max velocity: 0.26 m/s
+[2026-03-05 11:42:33] DRIVE: WARNING — Left encoder drift detected: +0.12 rad cumulative
+[2026-03-05 14:22:17] DRIVE: ERROR — Motor controller fault code 0x03 (overcurrent left motor)
+[2026-03-05 14:22:18] DRIVE: Emergency stop engaged. Velocity commands ignored.
+[2026-03-05 14:22:19] DRIVE: Auto-recovery attempt 1/3... FAILED
+[2026-03-05 14:22:22] DRIVE: Auto-recovery attempt 2/3... FAILED
+[2026-03-05 14:22:25] DRIVE: Auto-recovery attempt 3/3... FAILED
+[2026-03-05 14:22:26] DRIVE: CRITICAL — Persistent fault. Manual intervention required.
+[2026-03-05 14:45:00] DRIVE: Node restarted by operator. Fault cleared.
+[2026-03-05 14:45:01] DRIVE: Motors re-initialized. Encoder calibration: L=0.000 R=0.000
+[2026-03-06 08:00:04] DRIVE: Node started. Motors initialized.
+[2026-03-06 08:00:05] DRIVE: Ready. Max velocity: 0.26 m/s

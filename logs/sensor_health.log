@@ -1,0 +1,9 @@
+[2026-03-05 09:15:00] DEPTH_CAMERA: Started. Publishing at 30Hz, 640x480, rgb8
+[2026-03-05 09:15:00] STEREO: Started. L=10Hz R=10Hz, 1024x1024, baseline=0.06m
+[2026-03-05 09:15:01] IMU: Started. Publishing at 5Hz, noise sigma=0.01
+[2026-03-05 09:15:01] LIDAR: [NOT STARTED — not in active config]
+[2026-03-05 13:22:15] IMU: INFO — Cumulative yaw drift: +0.018 rad (within tolerance)
+[2026-03-05 17:45:30] DEPTH_CAMERA: INFO — Frame count: 921,600. No dropped frames.
+[2026-03-06 08:00:02] DEPTH_CAMERA: Started. Publishing at 30Hz, 640x480, rgb8
+[2026-03-06 08:00:02] STEREO: Started. L=10Hz R=10Hz, 1024x1024, baseline=0.06m
+[2026-03-06 08:00:03] IMU: Started. Publishing at 5Hz, noise sigma=0.01

@@ -1,0 +1,15 @@
+[2026-03-05 09:15:05] NAV: State=idle. Waiting for goal.
+[2026-03-05 09:15:06] NAV: WARNING — LiDAR not available. Navigation disabled.
+[2026-03-05 10:30:00] NAV: LiDAR started by operator.
+[2026-03-05 10:31:00] NAV: Goal received: dock_station_3 (x=12.5, y=3.2). ETA: 45s
+[2026-03-05 10:31:01] NAV: State=navigating.
+[2026-03-05 10:31:30] NAV: State=blocked. Obstacle detected at 1.2m
+[2026-03-05 10:31:35] NAV: State=recovery. Replanning...
+[2026-03-05 10:31:40] NAV: State=navigating. New path found.
+[2026-03-05 10:32:15] NAV: State=goal_reached. At dock_station_3.
+[2026-03-05 10:32:16] NAV: State=idle. Waiting for goal.
+[2026-03-05 14:22:17] NAV: EMERGENCY — Drive fault detected. Navigation halted.
+[2026-03-05 14:22:17] NAV: State=emergency_stop.
+[2026-03-05 14:45:01] NAV: Drive fault cleared. State=idle.
+[2026-03-06 08:00:04] NAV: State=idle. Waiting for goal.
+[2026-03-06 08:00:06] NAV: WARNING — LiDAR not available. Navigation disabled.

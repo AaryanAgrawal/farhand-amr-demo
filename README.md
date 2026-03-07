@@ -1,6 +1,6 @@
 # Farhand AMR Test Bench (BCR-001)
 
-Dockerized ROS2 robot simulator for testing the [Farhand Field](https://field.farhand.live) platform and CLI agent. Emulates a BCR-001 AMR with cameras, IMU, differential drive, battery, and a Livox Mid-360 LiDAR that starts OFF to simulate a replacement scenario.
+Dockerized ROS2 robot simulator for testing the [Farhand Field](https://field.farhand.live) platform and CLI agent. Emulates a BCR-001 AMR with 2D LiDAR, depth camera, stereo camera, IMU, differential drive, and battery. The LiDAR starts OFF to simulate a replacement scenario.
 
 ## Quick Start
 
@@ -19,7 +19,7 @@ Verify running topics:
 ros2 topic list
 ```
 
-Note: `/livox/lidar` is NOT listed — the LiDAR is intentionally off.
+You should see `/bcr_bot/camera/*`, `/bcr_bot/stereo/*`, `/bcr_bot/odom`, `/bcr_bot/joint_states`, `/bcr_bot/imu`, `/bcr_bot/battery_state`, `/bcr_bot/cmd_vel`. Note: `/bcr_bot/scan` is NOT listed — the LiDAR is intentionally off.
 
 ## Remote Access (Tailscale)
 
@@ -41,13 +41,23 @@ ssh ubuntu@100.84.147.55 -p 2222
 
 | Sensor | Topic | Rate | Node |
 |--------|-------|------|------|
-| Livox Mid-360 LiDAR | `/livox/lidar` | 10Hz | `lidar_node.py` |
-| USB Camera | `/camera/image_raw` | 30Hz | `camera_node.py` |
-| Differential Drive | `/odom`, `/joint_states` | 50Hz | `drive_node.py` |
-| IMU (BNO055) | `/imu/data` | 100Hz | `imu_node.py` |
-| Battery (3S LiPo) | `/battery_state` | 1Hz | `battery_node.py` |
+| 2D LiDAR | `/bcr_bot/scan` | 30Hz | `lidar_2d_node.py` |
+| Depth Camera | `/bcr_bot/camera/image_raw` | 30Hz | `depth_camera_node.py` |
+| Stereo Camera | `/bcr_bot/stereo/left/image_raw`, `right/image_raw` | 10Hz | `stereo_camera_node.py` |
+| Differential Drive | `/bcr_bot/odom`, `/bcr_bot/joint_states` | 50Hz | `drive_node.py` |
+| IMU | `/bcr_bot/imu` | 5Hz | `imu_node.py` |
+| Battery | `/bcr_bot/battery_state` | 1Hz | `battery_node.py` |
 
 **The LiDAR starts OFF by default** to simulate a replacement scenario.
+
+## Robot Specs
+
+| Property | Value |
+|----------|-------|
+| Chassis | 0.9 x 0.64 x 0.19m, 70kg |
+| Drive | Differential, wheel_radius=0.1m, wheel_sep=0.6m |
+| Wheels | middle_left_wheel_joint, middle_right_wheel_joint |
+| Nav2 | robot_radius=0.22m, max_vel=0.26m/s |
 
 ## Demo Scenario: LiDAR Replacement
 
@@ -66,8 +76,13 @@ bash ~/scripts/lidar_diagnostic.sh
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/lidar_diagnostic.sh` | Check LiDAR node, topic, and rate |
-| `scripts/start_lidar.sh` | Start the LiDAR node after replacement |
+| `scripts/lidar_diagnostic.sh` | Check 2D LiDAR node, topic, and rate |
+| `scripts/start_lidar.sh` | Start the 2D LiDAR node after replacement |
+
+## Network
+
+- SSH: `localhost:2222` (user: `ubuntu`, password: `ubuntu`)
+- ROS2 DDS: Cyclone DDS, domain 0
 
 ## Documentation (docs/)
 
@@ -76,15 +91,17 @@ Robot documentation structured for upload to the Farhand Field platform as resou
 ```
 docs/
 ├── robot/
-│   └── BCR-001_Technical_Reference.md       # Complete robot specs, sensors, ROS2 topics
+│   └── Technical_Reference.md              # Complete robot specs, sensors, ROS2 topics
 ├── sensors/
-│   └── livox-mid-360/
-│       ├── Livox_Mid-360_Datasheet.md       # Technical specifications
-│       ├── Livox_Mid-360_Integration_Guide.md  # SDK installation and config
-│       ├── Livox_Mid-360_User_Manual.pdf    # Official vendor manual
-│       └── Livox_Mid-360_Quick_Start.pdf    # Official vendor quick start
+│   ├── 2d-lidar/
+│   │   └── 2D_LiDAR_Reference.md          # 2D LiDAR specifications
+│   ├── depth-camera/
+│   │   └── Depth_Camera_Reference.md       # Depth camera specifications
+│   └── stereo-camera/
+│       └── Stereo_Camera_Reference.md      # Stereo camera specifications
 ├── procedures/
-│   └── SOP-HW-007_LiDAR_Replacement.md     # 12-step field replacement SOP
+│   ├── SOP-HW-007_LiDAR_Replacement.md    # Field replacement SOP
+│   └── SOP-NW-001_WiFi_Reconnection.md    # WiFi reconnection procedure
 └── diagnostics/
     └── SCR-DIAG-003_LiDAR_Network_Diagnostic.md  # Automated LiDAR diagnostic script
 ```
@@ -112,17 +129,18 @@ farhand-amr-demo/
 ├── docker-compose.yml      # Container config (port 2222)
 ├── entrypoint.sh           # Starts SSH + base nodes (no LiDAR)
 ├── nodes/
-│   ├── lidar_node.py       # Livox Mid-360 (200k pts @ 10Hz)
-│   ├── camera_node.py      # USB camera (640x480 @ 30Hz)
+│   ├── lidar_2d_node.py    # 2D LiDAR (361 samples @ 30Hz)
+│   ├── depth_camera_node.py # Depth camera (640x480 @ 30Hz)
+│   ├── stereo_camera_node.py # Stereo camera (1024x1024 @ 10Hz)
 │   ├── drive_node.py       # Diff drive (odom + joints @ 50Hz)
-│   ├── imu_node.py         # IMU (100Hz)
+│   ├── imu_node.py         # IMU (5Hz)
 │   └── battery_node.py     # Battery state (1Hz)
 ├── scripts/
-│   ├── lidar_diagnostic.sh # Check LiDAR health
+│   ├── lidar_diagnostic.sh # Check 2D LiDAR health
 │   └── start_lidar.sh      # Start LiDAR after replacement
 └── docs/                   # Upload to Farhand Field platform
     ├── robot/              # Robot reference docs
-    ├── sensors/            # Sensor vendor docs
+    ├── sensors/            # Sensor reference docs
     ├── procedures/         # SOPs
     └── diagnostics/        # Diagnostic scripts
 ```

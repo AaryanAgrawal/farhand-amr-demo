@@ -1,8 +1,8 @@
 services:
-  bcr001:
+  bcr-bot:
     build: .
-    container_name: farhand-bcr001
-    hostname: bcr001
+    container_name: bcr-bot
+    hostname: bcr-bot
     ports:
       - "2222:22"
     environment:
