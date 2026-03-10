@@ -1,6 +1,8 @@
 #!/bin/bash
 # 2D LiDAR Diagnostic Script
 # Run this on the robot to check LiDAR health
+source /opt/ros/humble/setup.bash 2>/dev/null
+source /home/ubuntu/ros2_ws/install/setup.bash 2>/dev/null
 
 echo "=== 2D LiDAR Diagnostic ==="
 echo ""

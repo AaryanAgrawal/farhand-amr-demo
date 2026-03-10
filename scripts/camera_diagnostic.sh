@@ -1,6 +1,7 @@
 #!/bin/bash
 # BCR-001 Camera System Diagnostic
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash 2>/dev/null
 
 echo ""
 echo "=== CAMERA DIAGNOSTIC ==="

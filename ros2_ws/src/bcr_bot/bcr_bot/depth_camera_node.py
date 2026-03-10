@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Simulated depth camera — publishes Image + CameraInfo at 30Hz.
+"""Simulated depth camera — publishes Image + CameraInfo.
 
-Fault mode: CAMERA_FAULT=1 → all-zero images (USB disconnect).
+Fault: fault.usb_disconnect → all-zero images.
 """
 
 import os
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image, CameraInfo
-import numpy as np
 import math
 from datetime import datetime
+
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from rcl_interfaces.msg import SetParametersResult
+from sensor_msgs.msg import Image, CameraInfo
 
 LOG_PATH = os.path.expanduser('~/logs/sensor_health.log')
 
@@ -27,21 +29,44 @@ def log(msg):
 class DepthCameraNode(Node):
     def __init__(self):
         super().__init__('depth_camera_node')
-        self.img_pub = self.create_publisher(Image, '/bcr_bot/camera/image_raw', 10)
-        self.info_pub = self.create_publisher(CameraInfo, '/bcr_bot/camera/camera_info', 10)
-        self.timer = self.create_timer(1.0 / 30.0, self.publish)  # 30 Hz
+
+        self.declare_parameter('rate_hz', 30.0)
+        self.declare_parameter('width', 640)
+        self.declare_parameter('height', 480)
+        self.declare_parameter('hfov_deg', 60.0)
+        self.declare_parameter('fault.usb_disconnect', False)
+
+        self.w = self.get_parameter('width').value
+        self.h = self.get_parameter('height').value
+        self.hfov_deg = self.get_parameter('hfov_deg').value
+        rate = self.get_parameter('rate_hz').value
+        self.fault = self.get_parameter('fault.usb_disconnect').value
+
         self.frame = 0
-        self.fault = os.environ.get('CAMERA_FAULT') == '1'
+        self.img_pub = self.create_publisher(Image, 'camera/image_raw', 10)
+        self.info_pub = self.create_publisher(CameraInfo, 'camera/camera_info', 10)
+        self.timer = self.create_timer(1.0 / rate, self.publish)
+
+        self.add_on_set_parameters_callback(self._on_param_change)
 
         mode = 'FAULT (zero data)' if self.fault else 'normal'
-        self.get_logger().info(f'Depth camera started (30Hz, 640x480, {mode})')
+        self.get_logger().info(f'Depth camera started ({rate}Hz, {self.w}x{self.h}, {mode})')
         if self.fault:
             log('ERROR — Frame data all zeros. Possible USB disconnect.')
-            log('Driver still running but no valid frames received.')
+
+    def _on_param_change(self, params):
+        for p in params:
+            if p.name == 'fault.usb_disconnect':
+                self.fault = p.value
+                if self.fault:
+                    log('FAULT INJECTED — USB disconnect, zero frames')
+                else:
+                    log('Fault cleared — normal frames restored')
+        return SetParametersResult(successful=True)
 
     def publish(self):
         stamp = self.get_clock().now().to_msg()
-        w, h = 640, 480
+        w, h = self.w, self.h
 
         if self.fault:
             img = np.zeros((h, w, 3), dtype=np.uint8)
@@ -62,7 +87,7 @@ class DepthCameraNode(Node):
         msg.data = img.tobytes()
         self.img_pub.publish(msg)
 
-        hfov_rad = math.radians(60.0)
+        hfov_rad = math.radians(self.hfov_deg)
         fx = w / (2.0 * math.tan(hfov_rad / 2.0))
         fy = fx
 

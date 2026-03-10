@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Lightweight navigation state simulator — publishes nav status at 1Hz.
+"""Lightweight navigation state simulator — publishes nav status.
 
-No actual Nav2 needed. Simulates state machine:
-  idle → navigating → goal_reached → idle
-  idle → navigating → blocked → recovery → navigating
-  DRIVE_FAULT=1 → emergency_stop
-  LiDAR off → stuck in idle with warning
+State machine: idle → navigating → goal_reached → idle
+               idle → navigating → blocked → recovery → navigating
+Faults: fault.drive_fault → emergency_stop
+        LiDAR off → stuck in idle with warning
 """
 
 import os
+import subprocess
+from datetime import datetime
+
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import SetParametersResult
 from std_msgs.msg import String
-from datetime import datetime
 
 LOG_PATH = os.path.expanduser('~/logs/navigation.log')
 
@@ -29,25 +31,40 @@ def log(msg):
 class NavSimNode(Node):
     def __init__(self):
         super().__init__('nav_sim_node')
-        self.pub = self.create_publisher(String, '/bcr_bot/nav_status', 10)
-        self.timer = self.create_timer(1.0, self.publish)
-        self.state = 'idle'
+
+        self.declare_parameter('rate_hz', 1.0)
+        self.declare_parameter('fault.drive_fault', False)
+
+        rate = self.get_parameter('rate_hz').value
+        self.drive_fault = self.get_parameter('fault.drive_fault').value
+
+        self.state = 'emergency_stop' if self.drive_fault else 'idle'
         self.tick = 0
-        self.drive_fault = os.environ.get('DRIVE_FAULT') == '1'
 
-        self.get_logger().info('Navigation simulator started (1Hz state machine)')
+        self.pub = self.create_publisher(String, 'nav_status', 10)
+        self.timer = self.create_timer(1.0 / rate, self.publish)
+
+        self.add_on_set_parameters_callback(self._on_param_change)
+
+        self.get_logger().info(f'Navigation simulator started ({rate}Hz state machine)')
         log('State=idle. Waiting for goal.')
-
         if self.drive_fault:
-            self.state = 'emergency_stop'
             log('EMERGENCY — Drive fault detected. Navigation halted.')
 
+    def _on_param_change(self, params):
+        for p in params:
+            if p.name == 'fault.drive_fault':
+                self.drive_fault = p.value
+                if self.drive_fault:
+                    self.state = 'emergency_stop'
+                    log('EMERGENCY — Drive fault injected. Navigation halted.')
+                else:
+                    self.state = 'idle'
+                    log('Drive fault cleared — navigation idle')
+        return SetParametersResult(successful=True)
+
     def _check_lidar(self):
-        """Check if LiDAR topic exists by looking at node list."""
-        # Simple heuristic: check if lidar node process is running
-        # In reality we'd check topic, but for sim we check env
         try:
-            import subprocess
             result = subprocess.run(
                 ['bash', '-lic', 'ros2 node list 2>/dev/null | grep -c two_d_lidar'],
                 capture_output=True, text=True, timeout=3

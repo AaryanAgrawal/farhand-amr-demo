@@ -1,0 +1,48 @@
+# Per-node sensor configuration
+battery_node:
+  ros__parameters:
+    rate_hz: 1.0
+    initial_pct: 0.85
+    capacity_ah: 5.0
+
+depth_camera_node:
+  ros__parameters:
+    rate_hz: 30.0
+    width: 640
+    height: 480
+    hfov_deg: 60.0
+
+stereo_camera_node:
+  ros__parameters:
+    rate_hz: 10.0
+    width: 1024
+    height: 1024
+    baseline: 0.06
+    hfov_deg: 60.0
+
+drive_node:
+  ros__parameters:
+    rate_hz: 50.0
+    wheel_separation: 0.6
+    wheel_radius: 0.1
+
+imu_node:
+  ros__parameters:
+    rate_hz: 5.0
+    noise_sigma: 0.01
+
+lidar_2d_node:
+  ros__parameters:
+    rate_hz: 30.0
+    num_samples: 361
+    range_min: 0.55
+    range_max: 16.0
+
+nav_sim_node:
+  ros__parameters:
+    rate_hz: 1.0
+
+payload_node:
+  ros__parameters:
+    status_rate_hz: 1.0
+    gripper_rate_hz: 2.0

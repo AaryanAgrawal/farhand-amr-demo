@@ -1,6 +1,7 @@
 #!/bin/bash
 # BCR-001 Sensor Health Check — checks all sensors and outputs formatted table
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash 2>/dev/null
 
 echo ""
 echo "  BCR-001 SENSOR HEALTH REPORT"

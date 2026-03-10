@@ -1,27 +1,21 @@
 #!/bin/bash
-# Clear all fault modes and restart all nodes in normal mode
+# Clear all fault modes via ROS2 parameters — no process restart needed
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash
 
 echo "Clearing all fault modes..."
-pkill -f "python3 nodes/" 2>/dev/null
-pkill -f "python3 /home/ubuntu/nodes/" 2>/dev/null
-sleep 2
 
-cd /home/ubuntu
+ros2 param set /bcr_bot/battery_node fault.critical false 2>/dev/null
+ros2 param set /bcr_bot/depth_camera_node fault.usb_disconnect false 2>/dev/null
+ros2 param set /bcr_bot/stereo_camera_node fault.desync false 2>/dev/null
+ros2 param set /bcr_bot/drive_node fault.motor_overcurrent false 2>/dev/null
+ros2 param set /bcr_bot/imu_node fault.degraded false 2>/dev/null
+ros2 param set /bcr_bot/lidar_2d_node fault.partial_occlusion false 2>/dev/null
+ros2 param set /bcr_bot/lidar_2d_node fault.intermittent false 2>/dev/null
+ros2 param set /bcr_bot/nav_sim_node fault.drive_fault false 2>/dev/null
+ros2 param set /bcr_bot/payload_node fault.gripper_stuck false 2>/dev/null
 
-# Restart all base nodes (no faults, LiDAR stays off by default)
-python3 nodes/depth_camera_node.py &
-python3 nodes/stereo_camera_node.py &
-python3 nodes/drive_node.py &
-python3 nodes/imu_node.py &
-python3 nodes/battery_node.py &
-python3 nodes/nav_sim_node.py &
-python3 nodes/payload_node.py &
-
-sleep 3
 echo ""
-echo "All nodes restarted in normal mode (no faults)."
-echo "LiDAR remains OFF (start manually with ~/scripts/start_lidar.sh)"
-echo ""
+echo "All faults cleared. Nodes continue running in normal mode."
 echo "Active nodes:"
 ros2 node list 2>/dev/null

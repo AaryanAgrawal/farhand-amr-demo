@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-# Source ROS2
+# Source ROS2 and workspace overlay
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash
 
 # Start SSH server
 /usr/sbin/sshd
@@ -13,22 +14,18 @@ chown -R ubuntu:ubuntu /home/ubuntu/logs
 
 echo "============================================"
 echo "  BCR-001 AMR Simulator"
-echo "  ROS2 Humble | Cyclone DDS"
+echo "  ROS2 Humble | Cyclone DDS | colcon"
 echo "  Firmware v2.4.1"
 echo "============================================"
 echo ""
 echo "Starting base nodes (LiDAR OFF)..."
 
-# Start all nodes EXCEPT LiDAR (7 nodes)
-python3 /home/ubuntu/nodes/depth_camera_node.py &
-python3 /home/ubuntu/nodes/stereo_camera_node.py &
-python3 /home/ubuntu/nodes/drive_node.py &
-python3 /home/ubuntu/nodes/imu_node.py &
-python3 /home/ubuntu/nodes/battery_node.py &
-python3 /home/ubuntu/nodes/nav_sim_node.py &
-python3 /home/ubuntu/nodes/payload_node.py &
+# Launch all nodes except LiDAR via ros2 launch
+ros2 launch bcr_bot bringup.launch.py &
 
-echo "Nodes started: depth_camera, stereo_camera, drive, imu, battery, nav_sim, payload"
+sleep 3
+
+echo "Nodes: robot_state_publisher, depth_camera, stereo_camera, drive, imu, battery, nav_sim, payload"
 echo "LiDAR is NOT running (start with ~/scripts/start_lidar.sh)"
 echo ""
 echo "Diagnostic scripts: ~/scripts/"

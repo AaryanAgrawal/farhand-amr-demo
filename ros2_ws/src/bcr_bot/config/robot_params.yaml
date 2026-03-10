@@ -1,0 +1,14 @@
+# BCR-001 robot physical parameters
+/**:
+  ros__parameters:
+    robot:
+      chassis:
+        length: 0.9
+        width: 0.64
+        height: 0.19
+        mass: 70.0
+      drive:
+        wheel_separation: 0.6
+        wheel_radius: 0.1
+        max_velocity: 0.26
+        robot_radius: 0.22

@@ -1,12 +1,13 @@
 #!/bin/bash
-# Start the 2D LiDAR node
+# Start the 2D LiDAR node via ros2 launch
 # Run this after replacing the LiDAR hardware
 
 echo "Starting 2D LiDAR node..."
 source /opt/ros/humble/setup.bash
-python3 /home/ubuntu/nodes/lidar_2d_node.py &
-LIDAR_PID=$!
-echo "LiDAR node started (PID: $LIDAR_PID)"
+source /home/ubuntu/ros2_ws/install/setup.bash
+
+ros2 launch bcr_bot lidar.launch.py &
+echo "LiDAR launch started"
 echo "Waiting 3 seconds for node to initialize..."
 sleep 3
 

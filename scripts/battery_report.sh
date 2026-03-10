@@ -1,6 +1,7 @@
 #!/bin/bash
 # BCR-001 Battery Status Report
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash 2>/dev/null
 
 echo ""
 echo "=== BATTERY REPORT ==="

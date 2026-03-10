@@ -1,0 +1,42 @@
+# Fault injection parameters — all default to false.
+# Activate at runtime: ros2 param set /bcr_bot/<node> fault.<name> true
+battery_node:
+  ros__parameters:
+    fault:
+      critical: false
+
+depth_camera_node:
+  ros__parameters:
+    fault:
+      usb_disconnect: false
+
+stereo_camera_node:
+  ros__parameters:
+    fault:
+      desync: false
+
+drive_node:
+  ros__parameters:
+    fault:
+      motor_overcurrent: false
+
+imu_node:
+  ros__parameters:
+    fault:
+      degraded: false
+
+lidar_2d_node:
+  ros__parameters:
+    fault:
+      partial_occlusion: false
+      intermittent: false
+
+nav_sim_node:
+  ros__parameters:
+    fault:
+      drive_fault: false
+
+payload_node:
+  ros__parameters:
+    fault:
+      gripper_stuck: false

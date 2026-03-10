@@ -1,8 +1,9 @@
 #!/bin/bash
-# Simulate fault modes on BCR-001
+# Simulate fault modes on BCR-001 via ROS2 parameter injection
 # Usage: simulate_fault.sh <fault_type> [<fault_type2> ...]
 # Types: drive, camera, imu, stereo, gripper, battery, lidar_occlusion, lidar_intermittent
 source /opt/ros/humble/setup.bash
+source /home/ubuntu/ros2_ws/install/setup.bash
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <fault_type> [<fault_type2> ...]"
@@ -10,57 +11,39 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-cd /home/ubuntu
-
 for fault in "$@"; do
     case $fault in
         drive)
-            pkill -f drive_node.py 2>/dev/null
-            sleep 1
-            DRIVE_FAULT=1 python3 nodes/drive_node.py &
-            echo "[FAULT] DRIVE_FAULT active — motor controller fault 0x03, emergency stop"
+            ros2 param set /bcr_bot/drive_node fault.motor_overcurrent true 2>/dev/null
+            echo "[FAULT] motor_overcurrent active — motor controller fault 0x03, emergency stop"
             ;;
         camera)
-            pkill -f depth_camera_node.py 2>/dev/null
-            sleep 1
-            CAMERA_FAULT=1 python3 nodes/depth_camera_node.py &
-            echo "[FAULT] CAMERA_FAULT active — zero frame data, USB disconnect"
+            ros2 param set /bcr_bot/depth_camera_node fault.usb_disconnect true 2>/dev/null
+            echo "[FAULT] usb_disconnect active — zero frame data, USB disconnect"
             ;;
         imu)
-            pkill -f imu_node.py 2>/dev/null
-            sleep 1
-            IMU_DEGRADED=1 python3 nodes/imu_node.py &
-            echo "[FAULT] IMU_DEGRADED active — 1Hz rate, high noise, yaw drift"
+            ros2 param set /bcr_bot/imu_node fault.degraded true 2>/dev/null
+            echo "[FAULT] IMU degraded active — 1Hz rate, high noise, yaw drift"
             ;;
         stereo)
-            pkill -f stereo_camera_node.py 2>/dev/null
-            sleep 1
-            STEREO_DESYNC=1 python3 nodes/stereo_camera_node.py &
-            echo "[FAULT] STEREO_DESYNC active — right camera 3Hz (left 10Hz)"
+            ros2 param set /bcr_bot/stereo_camera_node fault.desync true 2>/dev/null
+            echo "[FAULT] stereo desync active — right camera 3Hz (left 10Hz)"
             ;;
         gripper)
-            pkill -f payload_node.py 2>/dev/null
-            sleep 1
-            GRIPPER_FAULT=1 python3 nodes/payload_node.py &
-            echo "[FAULT] GRIPPER_FAULT active — gripper stuck, weight sensor disconnected"
+            ros2 param set /bcr_bot/payload_node fault.gripper_stuck true 2>/dev/null
+            echo "[FAULT] gripper_stuck active — gripper stuck, weight sensor disconnected"
             ;;
         battery)
-            pkill -f battery_node.py 2>/dev/null
-            sleep 1
-            BATTERY_CRITICAL=1 python3 nodes/battery_node.py &
-            echo "[FAULT] BATTERY_CRITICAL active — 3%, 10.2V, charger fault"
+            ros2 param set /bcr_bot/battery_node fault.critical true 2>/dev/null
+            echo "[FAULT] battery critical active — 3%, 10.2V, charger fault"
             ;;
         lidar_occlusion)
-            pkill -f lidar_2d_node.py 2>/dev/null
-            sleep 1
-            LIDAR_PARTIAL_OCCLUSION=1 python3 nodes/lidar_2d_node.py &
-            echo "[FAULT] LIDAR_PARTIAL_OCCLUSION active — 45 degree dead zone"
+            ros2 param set /bcr_bot/lidar_2d_node fault.partial_occlusion true 2>/dev/null
+            echo "[FAULT] partial occlusion active — 45 degree dead zone"
             ;;
         lidar_intermittent)
-            pkill -f lidar_2d_node.py 2>/dev/null
-            sleep 1
-            LIDAR_INTERMITTENT=1 python3 nodes/lidar_2d_node.py &
-            echo "[FAULT] LIDAR_INTERMITTENT active — 5s dropout every 30s"
+            ros2 param set /bcr_bot/lidar_2d_node fault.intermittent true 2>/dev/null
+            echo "[FAULT] intermittent dropout active — 5s dropout every 30s"
             ;;
         *)
             echo "Unknown fault: $fault"
