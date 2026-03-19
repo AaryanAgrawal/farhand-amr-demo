@@ -19,7 +19,7 @@ Verify running topics:
 ros2 topic list
 ```
 
-You should see `/bcr_bot/camera/*`, `/bcr_bot/stereo/*`, `/bcr_bot/odom`, `/bcr_bot/joint_states`, `/bcr_bot/imu`, `/bcr_bot/battery_state`, `/bcr_bot/cmd_vel`. Note: `/bcr_bot/scan` is NOT listed — the LiDAR is intentionally off.
+You should see `/bcr_bot/camera/*`, `/bcr_bot/stereo/*`, `/bcr_bot/odom`, `/bcr_bot/joint_states`, `/bcr_bot/imu`, `/bcr_bot/battery_state`, `/bcr_bot/cmd_vel`. Note: `/bcr_bot/scan` is NOT listed — the LiDAR is intentionally off.`
 
 ## Remote Access (Tailscale)
 
@@ -86,7 +86,7 @@ bash ~/scripts/lidar_diagnostic.sh
 
 ## Documentation (docs/)
 
-Robot documentation structured for upload to the Farhand Field platform as resources.
+Robot documentation structured for upload to the Farhand Relay platform as resources.
 
 ```
 docs/
@@ -106,20 +106,8 @@ docs/
     └── SCR-DIAG-003_LiDAR_Network_Diagnostic.md  # Automated LiDAR diagnostic script
 ```
 
-Upload the entire `docs/` folder to HQ > Resources on the Farhand Field platform.
+Upload the entire `docs/` folder to HQ > Resources on the Farhand Relay platform.
 
-## CLI Agent
-
-```bash
-farhand-field --robot-ip=localhost --robot-user=ubuntu
-```
-
-Or via Tailscale:
-```bash
-farhand-field --robot-ip=100.84.147.55 --robot-user=ubuntu
-```
-
-The CLI agent can SSH in and run diagnostics, start the LiDAR, verify the fix — all through natural language.
 
 ## File Structure
 
